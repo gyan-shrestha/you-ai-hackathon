@@ -1,4 +1,3 @@
-# utils/rank_utils.py
 import numpy as np
 from typing import List, Dict, Sequence, Tuple
 from utils.vector_utils import embed_texts  # reuse same local embedding model
