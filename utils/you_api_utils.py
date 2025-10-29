@@ -1,0 +1,52 @@
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+YOU_API_KEY = os.getenv("YOU_API_KEY")
+SEARCH_URL = "https://api.ydc-index.io/v1/search"
+CONTENTS_URL = "https://api.ydc-index.io/v1/contents"
+EXPRESS_URL = "https://api.you.com/v1/agents/runs"
+
+HEADERS_SEARCH = {"X-API-Key": YOU_API_KEY}
+HEADERS_CONTENTS = {"X-API-Key": YOU_API_KEY, "Content-Type": "application/json"}
+HEADERS_EXPRESS = {"Authorization": f"Bearer {YOU_API_KEY}", "Content-Type": "application/json"}
+
+# change count to get more search
+def search_pdfs(query: str, country="US", count=1):
+    """You.com Search API for PDF retrieval."""
+    print("query:", query)
+    params = {"query": query, "count": count, "country": country}
+    r = requests.get(SEARCH_URL, headers=HEADERS_SEARCH, params=params, timeout=30)
+    if r.status_code != 200:
+        return []
+    data = r.json()
+    results = data.get("results", {}).get("web", [])
+    return [r["url"] for r in results if r["url"].lower().endswith(".pdf")]
+
+def extract_via_contents_api(url: str, max_chars=2000):
+    """Extract text snippet using Contents API."""
+    payload = {"urls": [url], "format": "markdown"}
+    r = requests.post(CONTENTS_URL, headers=HEADERS_CONTENTS, json=payload, timeout=30)
+    if r.status_code != 200:
+        return ""
+    data = r.json()
+    if isinstance(data, list) and len(data) > 0:
+        return (data[0].get("markdown", "") or data[0].get("html", ""))[:max_chars]
+    return ""
+
+def ask_express_agent(context: str, question: str):
+    """Ask You.com Express Agent to synthesize an answer."""
+    payload = {
+        "agent": "express",
+        "input": f"Answer the question based on this text:\n\n{context[:6000]}\n\nQuestion: {question}"
+    }
+    r = requests.post(EXPRESS_URL, headers=HEADERS_CONTENTS, json=payload, timeout=60)
+    if r.status_code != 200:
+        return "Express Agent failed"
+    data = r.json()
+    output = data.get("output")
+    if isinstance(output, list) and len(output) > 0:
+        return output[0].get("text", "")
+    return output if isinstance(output, str) else "No answer."

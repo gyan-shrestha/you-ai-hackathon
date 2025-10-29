@@ -158,7 +158,7 @@ def main():
         for d in deductibles:
             print("-", d)
     else:
-        print("\n⚠️ No deductible values detected in this document.")
+        print("\n No deductible values detected in this document.")
 
 if __name__ == "__main__":
     main()
