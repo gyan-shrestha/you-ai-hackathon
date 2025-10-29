@@ -29,12 +29,15 @@ A lightweight Retrieval-Augmented Generation (RAG) pipeline using **You.com APIs
 
 3. **Create a .env file in the project root**
 
-    ```echo "YOU_API_KEY=ydc_xxxxxxxxxxxxxxx" > .env
+    ```
+    echo "YOU_API_KEY=ydc_xxxxxxxxxxxxxxx" > .env
 
 4. **Run the pipeline**
 
-    ```python smart_rag.py
+    ```
+    python smart_rag.py
 
-You’ll be prompted for a query, for example:
+**You’ll be prompted for a query, for example:**
 
-Enter your question: What is the deductible for Molina Silver HMO 2025 in Florida?
+    ```
+    Enter your question: What is the deductible for Molina Silver HMO 2025 in Florida?
