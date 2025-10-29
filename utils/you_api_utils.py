@@ -31,27 +31,27 @@ def search_pdfs(query: str, country="US", count=10):
 
     data = r.json()
     web_results = data.get("results", {}).get("web", [])
-    pdf_results = []
+    pdf_metadata = []
 
     for res in web_results:
         url = res.get("url", "")
         if not url.lower().endswith(".pdf"):
             continue
 
-        pdf_results.append({
+        pdf_metadata.append({
             "url": url,
             "title": res.get("title", ""),
             "description": res.get("description", ""),
             "snippets": res.get("snippets", []),
         })
 
-    print(f"Found {len(pdf_results)} PDF(s)")
-    return pdf_results
+    print(f"Found {len(pdf_metadata)} PDF(s)")
+    return pdf_metadata
 
 # ---------------------------------------------------------------------
 # Contents API
 # ---------------------------------------------------------------------
-def extract_via_contents_api(url: str, max_chars=2000):
+def extract_via_contents_api(url: str, max_chars=20000):
     """Extracts text snippet from a PDF via You.com Contents API."""
     payload = {"urls": [url], "format": "markdown"}
     r = requests.post(CONTENTS_URL, headers=HEADERS_CONTENTS, json=payload, timeout=30)

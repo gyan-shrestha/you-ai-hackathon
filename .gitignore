@@ -1,5 +1,11 @@
 # cache file
 content_cache.json
+pdf_metadata.json
+pdf_text_cache.json
+chunk_metadata.json
+
+*.index
+*.json
 
 # Environment files
 .env

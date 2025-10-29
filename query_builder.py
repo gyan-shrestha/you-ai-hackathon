@@ -1,6 +1,6 @@
 """
 query_builder.py
-Automatically builds optimized You.com search queries from user questions and fetches PDF metadata.
+Automatically builds optimized You.com search queries from user questions and fetches PDF link and PDF metadata.
 """
 
 import re
