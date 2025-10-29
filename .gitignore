@@ -1,3 +1,6 @@
+# cache file
+content_cache.json
+
 # Environment files
 .env
 # Byte-compiled / optimized / DLL files

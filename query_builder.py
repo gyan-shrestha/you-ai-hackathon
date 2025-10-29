@@ -1,6 +1,6 @@
 """
 query_builder.py
-Automatically builds optimized You.com search queries from user questions.
+Automatically builds optimized You.com search queries from user questions and fetches PDF metadata.
 """
 
 import re
@@ -57,9 +57,9 @@ def build_and_search(user_question: str) -> Tuple[str, List[str]]:
     insurer = detect_insurer(user_question)
     plan = detect_plan(user_question)
     year = detect_year(user_question)
+    feature = detect_feature(user_question)
 
     domain = get_site_from_insurer(insurer)
-    fallbacks = ["healthcare.gov", "cms.gov"]
 
     # Extract normalized metal tier and plan type
     metal_tier = ""
@@ -80,16 +80,17 @@ def build_and_search(user_question: str) -> Tuple[str, List[str]]:
 
     # Build optimized You.com query
     # base_query = f'site:{domain} "Summary of Benefits and Coverage" {year} {metal_tier} {plan_type} Florida'
-    base_query = f'site:{domain} {year} {metal_tier} {plan_type} Florida'
+    query = f'site:{domain} + {feature} + {insurer} + {metal_tier} + {year} + {plan_type} + Florida  lang:en'
+    # base_query = f'site:{domain} + "sbc" + {feature} + {insurer} + {metal_tier} + {year} + {plan_type} + Florida  lang:en'
+    # base_query = f'site:{domain} + sbc + {feature} + {insurer} + {metal_tier} + {year} + {plan_type}  Florida filetype:pdf  lang:en'
+    # base_query = f'site:{domain} + sbc + {insurer} + {metal_tier} + {year} + {plan_type}  Florida filetype:pdf  lang:en'
 
-    for site in [domain] + fallbacks:
-        query = base_query.replace(domain, site)
-        print(f"Trying query: {query}")
-        results = search_pdfs(query)
-
-        if results:
-            print(f"Found {len(results)} result(s) from {site}")
-            return query, results
+    print(f"Trying query: {query}")
+    results = search_pdfs(query, count=10)
+      
+    if results:
+        print(f"Found {len(results)} result(s) from {domain}")
+        return query, results
 
     print("No PDFs found for any site.")
     return "", []
